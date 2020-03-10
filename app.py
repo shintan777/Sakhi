@@ -69,9 +69,14 @@ def analyze_sentiment(documents):
                 doc.sentiment_scores.neutral,
                 doc.sentiment_scores.negative,
             ))
+
+            incividual = []
             for idx, sentence in enumerate(doc.sentences):
-                text.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
-                text.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
+                individual.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
+                max_score = max( sentence.sentiment_scores.positive,
+                                 sentence.sentiment_scores.neutral,
+                                 sentence.sentiment_scores.negative)
+                individual.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
                     sentence.sentiment_scores.positive,
                     sentence.sentiment_scores.neutral,
                     sentence.sentiment_scores.negative,
