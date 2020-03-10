@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block title %}
+    Home
+{% endblock %}
+{% block content %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../static/css/site.css">
+    </head>
+    <body>
+        <div class = "homepage">
+            <h2>How are you feeling?</h2>
+    <form action = "/result" method = "POST">
+            <textarea name="paragraph_text" id="myText" cols="50" rows="10">{{txt_entry}}</textarea>
+        </div> 
+        
+        <div class = "text-button"> <input type = "submit" value = "submit" /> </div>
+
+    </form>
+        
+    <form class="form-wala" id="upload-form" action="{{ url_for('ocr') }}" method="POST" enctype="multipart/form-data">
+    <input id="file-picker"  type="file" name="file" accept="image/*" required multiple>
+    <input  type="submit" value="Upload!" id="upload-button">
+    </form>
+
+
+        <p id="demo">Date {{date}}</p>
+        <p>{{result_string}}</p>
+    
+        <script>
+            function myFunction() {
+              var x = document.getElementById("myText").value;
+              document.getElementById("demo").innerHTML = x;
+            }
+            </script>
+    
+    </body>
+</html>
+    {% endblock %}
