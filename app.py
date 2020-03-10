@@ -81,9 +81,9 @@ def analyze_sentiment(documents):
                     sentence.sentiment_scores.neutral,
                     sentence.sentiment_scores.negative,
                 ))
-                text.append("Offset: {}".format(sentence.offset))
-                text.append("Length: {}\n".format(sentence.length))
             text.append("------------------------------------------------------")
+            print('\n\n\n\n\n',text)
+            print('\n\n\n\n\n',individual)
 
         return ''.join(text)
 
