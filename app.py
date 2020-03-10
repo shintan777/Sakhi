@@ -46,7 +46,7 @@ def extract_key_phrases(documents):
             if not doc.is_error:
                 text.append(" \n".join(doc.key_phrases))
             elif doc.is_error:
-                text.append(doc.id)
+                text.append('')
                 # text.append(doc.error) 
 
         return "       \n".join(text)
@@ -61,21 +61,21 @@ def analyze_sentiment(documents):
         text = []
 
         for idx, doc in enumerate(docs):
-            text.append("Document text: {}".format(documents[idx]))
-            text.append("Overall sentiment: {}".format(doc.sentiment))
+            text.append("{}".format(documents[idx]))
+            text.append("sentiment: {}".format(doc.sentiment))
         # [END batch_analyze_sentiment]
-            text.append("Overall scores: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f} \n".format(
+            text.append(" positive={0:.3f}; neutral={1:.3f}; negative={2:.3f} \n".format(
                 doc.sentiment_scores.positive,
                 doc.sentiment_scores.neutral,
                 doc.sentiment_scores.negative,
             ))
-            for idx, sentence in enumerate(doc.sentences):
-                text.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
-                text.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
-                    sentence.sentiment_scores.positive,
-                    sentence.sentiment_scores.neutral,
-                    sentence.sentiment_scores.negative,
-                ))
+            # for idx, sentence in enumerate(doc.sentences):
+            #     text.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
+            #     text.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
+            #         sentence.sentiment_scores.positive,
+            #         sentence.sentiment_scores.neutral,
+            #         sentence.sentiment_scores.negative,
+            #     ))
             text.append("\n\n\n\n\n")
 
         return "\n".join(text)
@@ -122,10 +122,7 @@ def ocr():
             filename = file.filename
             destination = "\\".join([target, filename])
             file.save(destination)
-            print('destination is \n\n\n\n\n\n\n',destination)
             text, lines = return_ocr(destination)
-            print('\n\n\n\n\n\n\n\n\n',lines)
-            print('\n\n\n\n\n\n\n\n\n',text)
 
     return render_template("home.html",txt_entry=text,date=datetime.now())
 
