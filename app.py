@@ -44,48 +44,41 @@ def extract_key_phrases(documents):
         result = text_analytics_client.extract_key_phrases(documents)
         for doc in result:
             if not doc.is_error:
-                text.append("<br>".join(doc.key_phrases))
+                text.append(" \n".join(doc.key_phrases))
             elif doc.is_error:
                 text.append(doc.id)
                 # text.append(doc.error) 
 
-        return "<br>".join(text)
+        return "       \n".join(text)
         # [END batch_extract_key_phrases]
 
 def analyze_sentiment(documents):
         # [START batch_analyze_sentiment]
         result = text_analytics_client.analyze_sentiment(documents)
-        # print(result)
+        print(result)
         docs = [doc for doc in result if not doc.is_error]
 
         text = []
 
         for idx, doc in enumerate(docs):
-            text.append("Entry: {}".format(documents[idx]))
-            text.append("Sentiment: {}".format(doc.sentiment))
+            text.append("Document text: {}".format(documents[idx]))
+            text.append("Overall sentiment: {}".format(doc.sentiment))
         # [END batch_analyze_sentiment]
             text.append("Overall scores: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f} \n".format(
                 doc.sentiment_scores.positive,
                 doc.sentiment_scores.neutral,
                 doc.sentiment_scores.negative,
             ))
-
-            incividual = []
             for idx, sentence in enumerate(doc.sentences):
-                individual.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
-                max_score = max( sentence.sentiment_scores.positive,
-                                 sentence.sentiment_scores.neutral,
-                                 sentence.sentiment_scores.negative)
-                individual.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
+                text.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
+                text.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
                     sentence.sentiment_scores.positive,
                     sentence.sentiment_scores.neutral,
                     sentence.sentiment_scores.negative,
                 ))
-            text.append("------------------------------------------------------")
-            print('\n\n\n\n\n',text)
-            print('\n\n\n\n\n',individual)
+            text.append("\n\n\n\n\n")
 
-        return ''.join(text)
+        return "\n".join(text)
 
 """
 
@@ -114,8 +107,9 @@ def result():
       result = request.form.get('paragraph_text')
       documents = result.split('.')
       print(documents)
-      result_string = analyze_sentiment(documents) + extract_key_phrases(documents)
-      return render_template("home.html",result_string=result_string,date=datetime.now(),txt_entry='')
+      result_string = analyze_sentiment(documents) 
+      phrases = extract_key_phrases(documents)
+      return render_template("home.html",result_string=result_string,date=datetime.now(),txt_entry=result, phrases=phrases)
 
 @app.route('/ocr',methods = ['POST','GET'])
 def ocr():
