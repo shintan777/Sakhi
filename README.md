@@ -1,1 +1,2 @@
-# Sakhi
+## Sakhi
+#An intelligent journal
