@@ -1,5 +1,4 @@
 {
-    "01": {
-      "note": "This data is very simple because we're demonstrating only the mechanism."
-    }
+  "02": {"tags": "future,food,sports"},
+  "03": {"tags": "food,future"}
   }

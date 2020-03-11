@@ -3,16 +3,20 @@
     <head>
         <meta charset="utf-8" />
         <title>{% block title %}{% endblock %}</title>
+     
+<!------ Include the above in your HEAD tag ---------->
+
         <link rel="stylesheet" href="../static/css/site.css">
+
     </head>
 
     <body>
         <div class="navbar">
             <b>SAKHI<b>
-            <img src="{{ url_for('static', filename = 'logo.png') }}" alt="User Image" width="50" height="50">
-            <a href="{{ url_for('home') }}" class="navbar-brand">Home</a>
+         <a href="{{ url_for('home') }}">   <img src="{{ url_for('static', filename = 'logo.png') }}" alt="User Image" width="50" height="50"></a>
+            <a href="{{ url_for('home') }}" class="navbar-brand">Write</a>
             <!-- <a href="{{ url_for('about') }}" class="navbar-brand">Timeline</a> -->
-            <a href="{{ url_for('contact') }}" class="navbar-brand">About</a>
+            <a href="{{ url_for('contact') }}" class="navbar-brand">Connect</a>
         </div>
 
         <div class="body-content">

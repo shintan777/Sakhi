@@ -27,7 +27,6 @@ def detect_language(documents):
         for idx, doc in enumerate(result):
             if not doc.is_error:
                 text.append("Document text: {}".format(documents[idx]))
-                
                 text.append("Language detected: {}".format(doc.primary_language.name))
                 text.append("ISO6391 name: {}".format(doc.primary_language.iso6391_name))
                 text.append("Confidence score: {}\n".format(doc.primary_language.score))
@@ -49,26 +48,26 @@ def extract_key_phrases(documents):
                 text.append('')
                 # text.append(doc.error) 
 
-        return "       \n".join(text)
-        # [END batch_extract_key_phrases]
+        return ",".join(text)
 
 def analyze_sentiment(documents):
         # [START batch_analyze_sentiment]
         result = text_analytics_client.analyze_sentiment(documents)
-        print(result)
         docs = [doc for doc in result if not doc.is_error]
-
+        sentiments = []
+        sad_sentiments = []
         text = []
-
         for idx, doc in enumerate(docs):
             text.append("{}".format(documents[idx]))
-            text.append("sentiment: {}".format(doc.sentiment))
-        # [END batch_analyze_sentiment]
-            text.append(" positive={0:.3f}; neutral={1:.3f}; negative={2:.3f} \n".format(
+            text.append("sentiment: {} \n".format(doc.sentiment))
+            sentiments.append(doc.sentiment)
+            text.append(" positive {0:.3f}; neutral {1:.3f}; negative {2:.3f} \n".format(
                 doc.sentiment_scores.positive,
                 doc.sentiment_scores.neutral,
                 doc.sentiment_scores.negative,
             ))
+            sad_sentiments.append(doc.sentiment_scores.negative)
+
             # for idx, sentence in enumerate(doc.sentences):
             #     text.append("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
             #     text.append("Sentence score: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f}".format(
@@ -77,8 +76,17 @@ def analyze_sentiment(documents):
             #         sentence.sentiment_scores.negative,
             #     ))
             text.append("\n\n\n\n\n")
-
-        return "\n".join(text)
+       
+        top_sentiment = [[sentiments.count(i), i ] for i in set(sentiments)]
+        top_sentiment.sort()
+        top_sentiment = top_sentiment[-1][1]
+        sad_avg = sum(sad_sentiments)/len(sad_sentiments)
+        advice = 'keep up the mood'
+        if sad_avg> 0.60 :
+            advice = 'Hey are you okay? Talking to someone will make it better. Open your mind to a similar person or consult a profession in the chat section.'
+                          
+        print('\n\n\n\n\n',sad_avg,top_sentiment,sad_sentiments)
+        return "\n".join(text), top_sentiment, advice
 
 """
 
@@ -92,6 +100,7 @@ from flask import render_template, request
 import re
 import os
 from ocr import return_ocr
+import json
 
 app = Flask(__name__)
 
@@ -106,10 +115,17 @@ def result():
    if request.method == 'POST':
       result = request.form.get('paragraph_text')
       documents = result.split('.')
-      print(documents)
-      result_string = analyze_sentiment(documents) 
+      result_string, top_sentiment, advice = analyze_sentiment(documents) 
       phrases = extract_key_phrases(documents)
-      return render_template("home.html",result_string=result_string,date=datetime.now(),txt_entry=result, phrases=phrases)
+      dict_to_send = {
+          "01":{"tags":phrases}
+      }
+      print(dict_to_send)
+      with open('result.json', 'w') as fp:
+          json.dump(dict_to_send, fp)
+      return render_template("home.html",result_string=result_string,date=datetime.now(),txt_entry=result,
+                            phrases=phrases, top_sentiment=top_sentiment, advice=advice)
+
 
 @app.route('/ocr',methods = ['POST','GET'])
 def ocr():
@@ -156,6 +172,21 @@ def about():
 @app.route("/contact/")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/search/")
+def search():
+    with open('result.json') as json_file:
+        user = json.load(json_file)
+    tags = user["01"]["tags"]
+    tags = tags.split(',')
+
+    with open('site/data.json') as json_file:
+        users = json.load(json_file)
+    user_tags = [users[i]["tags"] for i in users.keys()]
+    user_tags = [x.split(',') for x in user_tags]
+ 
+    return render_template("search.html",len = len(tags), tags = tags, users = users, len_users = len(users)  )
 
 if __name__ == '__main__':
     app.run(debug=True)
